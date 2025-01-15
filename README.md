@@ -42,7 +42,7 @@ Welcome to my custom Neovim configuration! 🎨 This setup is designed for perfo
      ```
    - **Windows**:
      ```bash
-     git clone https://github.com/shuva-kharel/nvim-config.git %APPDATA%\nvim
+     git clone https://github.com/shuva-kharel/nvim-config.git %APPDATA%\Local\nvim
      ```
 
 3. Open Neovim and install plugins:
