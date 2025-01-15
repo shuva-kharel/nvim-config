@@ -32,13 +32,15 @@ Welcome to my custom Neovim configuration! 🎨 This setup is designed for perfo
 2. Clone this repository into your Neovim configuration directory:
 
    ```bash
-   git clone https://github.com/shuva-kharel/nvim-config.git ~/.config/nvim
+   git clone https://github.com/shuva-kharel/nvim-config.git .config
    ```
 
 3. Open Neovim and install plugins:
 
    ```bash
-   nvim
+   cd .config/nvim
+   nvim init.lua
+   source %
    ```
    Lazy.nvim will automatically install plugins on startup.
 
