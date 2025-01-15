@@ -20,29 +20,37 @@ Welcome to my custom Neovim configuration! 🎨 This setup is designed for perfo
 
 1. Ensure you have Neovim 0.8 or higher installed.
 2. Install a Nerd Font (e.g., [FiraCode Nerd Font](https://www.nerdfonts.com)) for proper icon support.
+3. Ensure the following dependencies are installed:
+   - **Ripgrep** (for `live_grep` in Telescope):
+     - **Linux**: `sudo apt install ripgrep` (Debian/Ubuntu) or `sudo pacman -S ripgrep` (Arch)
+     - **macOS**: `brew install ripgrep`
+     - **Windows**: Download it from [Ripgrep Releases](https://github.com/BurntSushi/ripgrep/releases) and add it to your `PATH`.
 
 ### Setup
 
 1. Backup any existing Neovim configuration:
 
    ```bash
-   mv ~/.config/nvim ~/.config/nvim-backup
+   mv ~/.config/nvim ~/.config/nvim-backup  # Linux/macOS
+   ren %APPDATA%\nvim %APPDATA%\nvim-backup  # Windows
    ```
 
 2. Clone this repository into your Neovim configuration directory:
-
-   ```bash
-   git clone https://github.com/shuva-kharel/nvim-config.git .config
-   ```
+   - **Linux/macOS**:
+     ```bash
+     git clone https://github.com/shuva-kharel/nvim-config.git ~/.config/nvim
+     ```
+   - **Windows**:
+     ```bash
+     git clone https://github.com/shuva-kharel/nvim-config.git %APPDATA%\nvim
+     ```
 
 3. Open Neovim and install plugins:
-
-   ```bash
-   cd .config/nvim
-   nvim init.lua
-   source %
-   ```
-   Lazy.nvim will automatically install plugins on startup.
+   - Simply open Neovim:
+     ```bash
+     nvim
+     ```
+     Lazy.nvim will automatically install plugins on startup.
 
 4. Restart Neovim and enjoy your new setup! 🚀
 
