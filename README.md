@@ -1,6 +1,6 @@
 # My Neovim Configuration
 
-Welcome to my custom Neovim configuration! 🎨 This setup is designed for performance, simplicity, and extensibility. With [Lazy.nvim](https://github.com/folke/lazy.nvim) as the plugin manager, you can effortlessly add or remove plugins as needed. 
+Welcome to my custom Neovim configuration! 🎨 This setup is designed for performance, simplicity, and extensibility. With [Lazy.nvim](https://github.com/folke/lazy.nvim) as the plugin manager, you can effortlessly add or remove plugins as needed.
 
 ---
 
@@ -23,20 +23,26 @@ Welcome to my custom Neovim configuration! 🎨 This setup is designed for perfo
 
 ### Setup
 
-1. Clone this repository into your Neovim configuration directory:
+1. Backup any existing Neovim configuration:
 
    ```bash
-   git clone https://github.com/your-username/nvim-config.git ~/.config/nvim
+   mv ~/.config/nvim ~/.config/nvim-backup
    ```
 
-2. Open Neovim and install plugins:
+2. Clone this repository into your Neovim configuration directory:
+
+   ```bash
+   git clone https://github.com/shuva-kharel/nvim-config.git ~/.config/nvim
+   ```
+
+3. Open Neovim and install plugins:
 
    ```bash
    nvim
    ```
    Lazy.nvim will automatically install plugins on startup.
 
-3. Restart Neovim and enjoy your new setup! 🚀
+4. Restart Neovim and enjoy your new setup! 🚀
 
 ---
 
@@ -58,7 +64,10 @@ This configuration leverages the power of these amazing plugins:
 
 ## 🖥 Screenshots
 
-_Optional: Include screenshots of your setup in action to showcase its beauty!_
+Here is a glimpse of my setup in action:
+
+![Dashboard Example](https://via.placeholder.com/800x400?text=Neovim+Dashboard)
+![Code Editing Example](https://via.placeholder.com/800x400?text=Code+Editing+with+Treesitter)
 
 ---
 
@@ -73,11 +82,15 @@ Here are some custom keybindings that make editing a breeze:
 | `<leader>e`     | Open file explorer.         |
 | `<leader>q`     | Quit Neovim.                |
 
+Make sure these keybindings match the mappings in your `keymaps.lua`.
+
 ---
 
 ## 🧩 Customization
 
 Feel free to modify the configuration to suit your preferences. The setup is modular and easy to extend. Simply edit the files in the `lua/` directory.
+
+To customize specific plugins, navigate to `lua/plugins/` and modify their corresponding configuration files.
 
 ---
 
@@ -85,11 +98,14 @@ Feel free to modify the configuration to suit your preferences. The setup is mod
 
 If you have suggestions or improvements, feel free to open an issue or submit a pull request. Contributions are always welcome! 🌟
 
----=
+---
 
 ## 💬 Acknowledgements
 
-Special thanks to the amazing Neovim community and the developers of these fantastic plugins.
+Special thanks to:
+- [folke](https://github.com/folke) for Lazy.nvim and other amazing plugins.
+- The [Neovim](https://neovim.io/) community for their dedication to making coding joyful.
+- All plugin authors for their contributions to the ecosystem.
 
 ---
 
