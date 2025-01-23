@@ -76,8 +76,7 @@ This configuration leverages the power of these amazing plugins:
 
 Here is a glimpse of my setup in action:
 
-![Dashboard Example](https://via.placeholder.com/800x400?text=Neovim+Dashboard)
-![Code Editing Example](https://via.placeholder.com/800x400?text=Code+Editing+with+Treesitter)
+![Dashboard Example](https://cloud-c5hpnsjq3-hack-club-bot.vercel.app/0image.png)
 
 ---
 
