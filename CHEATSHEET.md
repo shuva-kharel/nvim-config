@@ -2,6 +2,8 @@
 
 `<leader>` is **Space**. Press Space and pause for which-key.
 
+Windows tools: LLVM supplies `clang`, `clang++`, `clangd`, `clang-format`, and `clang-tidy`; Visual Studio supplies CMake/Ninja. Mason supplies the other LSPs, Ruff, prettierd, linters, and debugger adapters. Rust needs rustup and rustfmt when you begin using it.
+
 | Area | Keys |
 | --- | --- |
 | Modes | `i` insert, `Esc` normal, `v` visual, `V` line visual, `<C-v>` block visual |
@@ -21,6 +23,10 @@
 | Debug | `F5` run, `F10/F11/F12` step, `<leader>db` breakpoint, `dr` REPL, `du` UI, `dx` stop |
 | Buffers | `<leader>bn/bp/bd` next/previous/delete |
 | Windows | `<leader>sv/sh/sx` split/close, `<C-h/j/k/l>` move |
-| AI (opt in) | `Alt-l` accept, `Alt-]/Alt-[` cycle, `Ctrl-]` dismiss |
+| Copilot (enabled) | `Alt-l` accept, `Alt-]/Alt-[` cycle, `Ctrl-]` dismiss |
 
-See [README.md](README.md) for dependencies, installation, languages, and every mapping.
+Run `:Copilot auth` and complete GitHub sign-in to activate suggestions. `:Copilot status` checks the connection; set `vim.g.enable_copilot = false` in `init.lua` to disable it later. blink.cmp and LSP completion work without Copilot.
+
+Use `:LspInfo` for attached servers, `:Mason` for Mason packages, `:ConformInfo` for formatting, and `:checkhealth` for general checks. If C/C++ navigation is weak, generate a CMake `compile_commands.json` and make it visible to clangd. If `<leader>fg` cannot search, check `:echo exepath('rg')`.
+
+See [README.md](README.md) for dependencies, installation, languages, troubleshooting, and every mapping.

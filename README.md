@@ -8,13 +8,27 @@ Add screenshots of the editor, Telescope, Neo-tree, and DAP UI to `docs/screensh
 
 ## Requirements
 
-**Core:** Neovim 0.11 or newer (tested with 0.12.5), Git, a C compiler and `tree-sitter` parser build prerequisites, a Nerd Font, and [ripgrep](https://github.com/BurntSushi/ripgrep) for live grep. [fd](https://github.com/sharkdp/fd) is optional; Telescope falls back to its normal file search when it is absent. A working clipboard provider is needed for `unnamedplus`.
+**Core:** Neovim 0.12.5, Git, a C compiler for Treesitter parsers, a Nerd Font, and [ripgrep](https://github.com/BurntSushi/ripgrep) for live grep. [fd](https://github.com/sharkdp/fd) speeds up file finding; Telescope can also use ripgrep. Windows clipboard support uses Neovim's bundled `win32yank`.
 
-**Language tooling:** Mason installs the listed LSP servers. Node.js and npm are needed for many JavaScript based tools. Install a C/C++ compiler, CMake, GDB or LLDB, and `clangd`/`clang-format` if Mason cannot provide them on your platform. Rust needs the Rust toolchain and `rustfmt`; Python needs a real interpreter and `pip`/virtual environments. Docker, SQL databases, and project runtimes remain external.
+**Windows C/C++:** Install LLVM with `winget install --id LLVM.LLVM --exact` to provide `clang`, `clang++`, `clangd`, `clang-format`, and `clang-tidy` as one toolchain. This setup uses the CMake and Ninja bundled with Visual Studio 2026; standalone CMake and Ninja also work. The config finds LLVM, Visual Studio's CMake/Ninja, winget's ripgrep/fd, and an installed 7-Zip inside Neovim without changing the permanent PATH. When LLVM is absent, it can import an installed Visual Studio developer environment for its C compiler. A normal C/C++ compiler and CMake remain required for full C/C++ use.
 
-**Debugging:** Install `codelldb`, `debugpy`, and `js-debug-adapter` using `:MasonInstall codelldb debugpy js-debug-adapter`. For C/C++/Rust, build a binary with debug symbols first. For Python, select a working interpreter or activate a virtual environment. For JS/TS, Node.js is required; TypeScript needs emitted JavaScript and source maps or a compatible runtime such as `tsx`. Adapter paths are based on Mason package layouts; check `:Mason` if a package changes layout.
+**Other system tools:** Node.js/npm support the web LSPs and js-debug. Python 3.14 with `pynvim` supports the Python provider; project virtual environments remain independent. Git is needed for lazy.nvim and gitsigns. On the audited Windows machine, ripgrep 15.2, fd 10.5, Visual Studio 2026, CMake, Ninja, Python 3.14, Node 24, and 7-Zip were already present. LLVM 23.1.2 was installed for this setup. Docker, databases, and project runtimes remain project dependencies.
+
+**Debugging:** Mason supplies `codelldb`, `debugpy`, and `js-debug-adapter`. For C/C++/Rust, build a binary with debug symbols first (`clang -g` or a Debug CMake build). Python debugging uses the active `VIRTUAL_ENV` when present. JS/TS debugging needs Node.js; TypeScript needs emitted JavaScript with source maps or a compatible runtime such as `tsx`. The DAP paths follow current Mason package layouts; check `:Mason` after package updates.
 
 ## Installation
+
+On Windows PowerShell, back up an existing config, then clone into `$env:LOCALAPPDATA\nvim`. Install the system tools you actually use; the C/C++ toolchain command is:
+
+```powershell
+winget install --id LLVM.LLVM --exact
+$config = Join-Path $env:LOCALAPPDATA 'nvim'
+if (Test-Path $config) { Move-Item $config "$config.backup.$(Get-Date -Format yyyyMMdd-HHmmss)" }
+git clone https://github.com/shuva-kharel/nvim-config $config
+nvim
+```
+
+If the config directory already exists, update that checkout instead of cloning over it. Start `nvim`, run `:Lazy sync`, then inspect `:Mason`, `:LspInfo`, and `:checkhealth`. The installed Mason packages listed below can be added with `:MasonInstall <package>`. The config detects existing Windows system tools when winget has not added them to PATH.
 
 On Linux, back up an existing config before cloning:
 
@@ -24,7 +38,7 @@ git clone https://github.com/shuva-kharel/nvim-config ~/.config/nvim
 nvim
 ```
 
-Use Homebrew paths (`~/.config/nvim`) on macOS. On Windows, use `%LOCALAPPDATA%\nvim` and back up that directory first. Run `:Lazy sync`, then `:Mason` to inspect installations. `:TSInstall` is available if a parser failed. Run `:checkhealth` after installing system dependencies.
+Use `~/.config/nvim` on macOS. On other machines, install the system dependencies through their native package managers. `:TSInstall` is available if a parser failed.
 
 ## Structure
 
@@ -50,15 +64,15 @@ Use Homebrew paths (`~/.config/nvim`) on macOS. On Windows, use `%LOCALAPPDATA%\
 | which-key.nvim | Leader command discovery |
 | lualine.nvim | Compact status line |
 | todo-comments.nvim | TODO/FIXME highlighting |
-| copilot.lua | Optional, disabled AI suggestions |
+| copilot.lua | Enabled AI suggestions; GitHub sign-in required |
 
 ## Language support
 
-Mason automatically installs the LSP servers below. Formatters, linters, and debugger adapters are installed separately with `:MasonInstall` or your system package manager. Project tools such as ESLint should usually be installed in the project.
+Mason v2 and mason-lspconfig automatically install the configured LSP servers **except clangd**, which comes from system LLVM. mason-lspconfig v2 enables its servers through Neovim's native `vim.lsp` API. Mason also manages the installed formatter, linter, and debugger packages listed here. ESLint itself and its rules belong in each JS/TS project.
 
 | Language | LSP | Formatter | Linter | Debugger | Treesitter |
 | --- | --- | --- | --- | --- | --- |
-| C/C++ | clangd | clang-format | clangd/clang-tidy | codelldb | c, cpp |
+| C/C++ | system clangd | system clang-format | clangd with clang-tidy | codelldb | c, cpp |
 | Rust | rust-analyzer | rustfmt | rust-analyzer/clippy via Cargo | codelldb | rust |
 | Python, Django, FastAPI | basedpyright | Ruff format | Ruff | debugpy | python |
 | JS/TS, Node, React, Next | ts_ls | prettierd or prettier | eslint_d | js-debug-adapter | javascript, typescript, tsx |
@@ -73,17 +87,27 @@ Mason automatically installs the LSP servers below. Formatters, linters, and deb
 | Dockerfile/Compose | dockerls, docker_compose_language_service | LSP fallback | LSP | — | dockerfile, yaml |
 | Git config | — | — | — | — | git_config |
 
-Install formatter/linter packages as needed: `:MasonInstall clang-format stylua ruff prettierd shfmt sql-formatter eslint_d shellcheck`. `rustfmt` comes from `rustup component add rustfmt`. Project local Prettier and ESLint configurations control their rules. Conform uses external formatters first and LSP formatting only as a fallback, so two formatters do not run on one save. Ruff's lint rules complement basedpyright type checks. `eslint_d` requires an ESLint project setup.
+Currently installed Mason packages include `basedpyright`, `typescript-language-server` (`ts_ls`), `html-lsp`, `css-lsp`, `json-lsp`, `yaml-language-server`, `lua-language-server`, `rust-analyzer`, and the other LSPs shown in the table. Mason also supplies `ruff`, `prettierd`, `stylua`, `shfmt`, `sql-formatter`, `eslint_d`, `shellcheck`, `codelldb`, `debugpy`, and `js-debug-adapter`. `clangd` and `clang-format` are intentionally system managed so the compiler, LSP, and formatter share one LLVM installation. `rustfmt` comes from `rustup component add rustfmt` when Rust is installed. Conform tries `prettierd` first and project/system `prettier` only if unavailable; `stop_after_first` prevents both from formatting one save. Conform invokes LSP formatting only when no external formatter is available. Ruff adds Python style diagnostics alongside basedpyright type checking. `eslint_d` needs ESLint installed and configured in the project.
 
-For CMake projects, generate `compile_commands.json` with `cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`, then link or copy it to the project root if clangd cannot find it. `clangd --clang-tidy` keeps compiler and clang-tidy warnings visible. `<leader>ch` switches header/source after clangd attaches.
+For CMake projects on Windows, generate `compile_commands.json` with `cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++`. If clangd does not find it in `build`, copy it to the project root (`Copy-Item build\compile_commands.json .`) or set `CompilationDatabase: build` in a project `.clangd` file. The `--clang-tidy` flag enables clangd's integrated clang-tidy checks. `<leader>ch` switches header/source after clangd attaches.
+
+Rust is ready in the config, but this machine has no Rust toolchain. When you start Rust work, install [rustup](https://rustup.rs/), run `rustup component add rustfmt`, and use Cargo for builds and Clippy. Mason already has `rust-analyzer` and `codelldb`; Rust debugging starts after you build a binary with debug information.
 
 To add a language: add its server name in `lua/plugins/lsp.lua`, its parser in `treesitter.lua`, then choose a formatter in `formatting.lua` and an optional linter in `linting.lua`. Add a DAP adapter only if you actually use debugging for it.
 
 ## AI completion
 
-The optional provider is GitHub Copilot Free via `copilot.lua`. It needs a GitHub account and internet access. Free plans have monthly completion limits that GitHub may change; check [current plan details](https://docs.github.com/en/copilot/managing-copilot/managing-copilot-as-an-individual-subscriber/getting-started-with-copilot-on-your-personal-account/about-individual-copilot-plans-and-benefits). Copilot sends code context to GitHub for suggestions. It is **off by default**, so no AI plugin is installed or code transmitted by this config until you opt in.
+GitHub Copilot is enabled through `copilot.lua` and needs a GitHub account and internet access. The plugin is installed, but sign-in is a separate personal step. Copilot sends code context to GitHub for suggestions. See [GitHub's plan details](https://docs.github.com/en/copilot/managing-copilot/managing-copilot-as-an-individual-subscriber/getting-started-with-copilot-on-your-personal-account/about-individual-copilot-plans-and-benefits) for current limits.
 
-To enable, add `vim.g.enable_copilot = true` near the top of `init.lua`, before `require("config.lazy")`; restart, run `:Lazy sync`, then `:Copilot auth` and `:Copilot status`. Remove that line to disable it. LSP and blink.cmp operate independently of Copilot. Its suggestion keys are listed below; terminal support for Alt combinations varies.
+To sign in, run `:Copilot auth` in Neovim and finish the GitHub browser/device flow, then use `:Copilot status`. No credentials are stored in this repository. To disable Copilot later, change `vim.g.enable_copilot = true` in `init.lua` to `false` and restart. LSP and blink.cmp operate independently of Copilot. Its suggestion keys are listed below; terminal support for Alt combinations varies.
+
+## Troubleshooting and health checks
+
+- `:LspInfo` is an alias for `:checkhealth vim.lsp` on Neovim 0.12. Open a source file first to see active clients. `:Mason` shows Mason packages; system LLVM tools do not appear as installed Mason packages.
+- If C/C++ LSP features are missing, check `:echo exepath('clangd')`, `:LspInfo`, and the project's `compile_commands.json`. For parser build failures, check `:echo exepath('clang')` and reinstall that parser with `:TSInstall c cpp`.
+- For Telescope, check `:echo exepath('rg')` and `:echo exepath('fd')`. `<leader>fg` needs ripgrep; `<leader>ff` uses fd when available.
+- `:ConformInfo`, `:checkhealth`, `:checkhealth mason`, and `:DapShowLog` help diagnose formatting, package installation, and debugging failures. Restart Neovim after installing Windows tools so new processes see them.
+- Mason health lists optional runtimes such as Go, Ruby, PHP, Julia, and cargo. Install them only for projects that need them. `unzip`, `gzip`, and `wget` are not needed for the packages verified here. lazy.nvim's LuaRocks support is disabled because no installed plugin requires it. Unknown compound LSP filetypes and the built-in `gc`/`gcc` which-key overlap are informational. Neovim's `vim.pack` warnings concern separate package state and do not affect lazy.nvim.
 
 ## Keybindings
 

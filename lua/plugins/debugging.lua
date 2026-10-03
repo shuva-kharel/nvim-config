@@ -120,7 +120,8 @@ return {
         local js = mason .. "js-debug-adapter/js-debug/src/dapDebugServer.js"
         dap.adapters["pwa-node"] = {
             type = "server",
-            host = "127.0.0.1",
+            -- js-debug binds localhost (often ::1 on current Node/Windows).
+            host = "localhost",
             port = "${port}",
             executable = { command = "node", args = { js, "${port}" } },
         }

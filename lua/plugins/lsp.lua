@@ -1,5 +1,4 @@
 local servers = {
-    "clangd",
     "rust_analyzer",
     "lua_ls",
     "basedpyright",
@@ -23,6 +22,11 @@ return {
         lazy = false,
         dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig", "saghen/blink.cmp" },
         config = function()
+            -- nvim-lspconfig skips its :LspInfo alias when Neovim provides :lsp.
+            -- Neovim 0.12's :lsp has no info subcommand, so keep the health view.
+            if vim.fn.exists(":LspInfo") == 0 then
+                vim.api.nvim_create_user_command("LspInfo", "checkhealth vim.lsp", {})
+            end
             local capabilities = require("blink.cmp").get_lsp_capabilities()
             vim.lsp.config("*", { capabilities = capabilities })
             vim.lsp.config(
@@ -56,6 +60,8 @@ return {
                 settings = { basedpyright = { analysis = { typeCheckingMode = "standard" } } },
             })
             require("mason-lspconfig").setup({ ensure_installed = servers, automatic_enable = servers })
+            -- LLVM supplies clangd together with the C/C++ compiler and formatter.
+            vim.lsp.enable("clangd")
 
             vim.api.nvim_create_autocmd("LspAttach", {
                 group = vim.api.nvim_create_augroup("PersonalLspMaps", { clear = true }),

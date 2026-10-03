@@ -1,5 +1,4 @@
--- Opt in by setting vim.g.enable_copilot = true BEFORE requiring config.lazy.
--- No plugin or service starts in the default configuration.
+-- Set vim.g.enable_copilot before requiring config.lazy to control this plugin.
 return {
     "zbirenbaum/copilot.lua",
     enabled = vim.g.enable_copilot == true,

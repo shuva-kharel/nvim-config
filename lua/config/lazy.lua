@@ -15,5 +15,5 @@ end
 vim.opt.rtp:prepend(path)
 require("lazy").setup(
     { { import = "plugins" } },
-    { checker = { enabled = false }, change_detection = { notify = false } }
+    { checker = { enabled = false }, change_detection = { notify = false }, rocks = { enabled = false } }
 )
