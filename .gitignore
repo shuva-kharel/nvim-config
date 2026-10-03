@@ -1,0 +1,12 @@
+# Plugin installations, tooling, caches and local editor state belong under stdpath('data').
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.log
+.nvim.lua
+.env
+.env.*
+!.env.example
+lua/.luarc.json
